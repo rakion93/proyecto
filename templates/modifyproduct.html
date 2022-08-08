@@ -1,0 +1,77 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+<div class="columns">
+    <div class="column">
+        <div class="column is-full title">Modificar producto</div>
+    </div>
+</div>
+<div class = "columns">
+    <!-- Mostarmos los datos actuales del producto -->
+    <div class="column">
+        <div class="card">
+            <header class="card-header">
+                <p class="card-header-title">
+                  {{ producto.name }}
+                </p>
+            </header>
+            <div class="card-image">
+                <figure class="image is-4by3">
+                    <!-- Si la URL esta definida, la ponemos, sino ponemos una imagen predefinida-->
+                    {% if producto.url != "undefined" %}<img src="{{ producto.url }}" alt="Placeholder image">
+                    {% else %} <img src="https://st4.depositphotos.com/14953852/22772/v/600/depositphotos_227725020-stock-illustration-no-image-available-icon-flat.jpg" alt="Placeholder image">
+                    {% endif %}
+                </figure>
+            </div>
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-content">
+                        <p class="card-hearder-subtitle">Precio venta : {{ producto.price }} €</p>
+                        <p class="card-hearder-subtitle">Stock Tienda : {{ producto.stock }} unidades</p>
+                        <p class="card-hearder-subtitle">Stock Almacen : {{ producto.stockAlmacen }} unidades</p>
+                        <p class="card-hearder-subtitle">Descripción: {{ producto.description }}</p>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Formulario de modificacion -->
+    <div class="column">
+        <form method="POST" action="/modify_post/{{ producto.id }}">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="name" placeholder="Nombre Producto" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="price" placeholder="Precio" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="iva" placeholder="IVA" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="stock" placeholder="Stock" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <textarea class="textarea" name="description" placeholder="Descripcion"></textarea>
+                </div>
+            </div>
+             <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="url" placeholder="URL Imagen Producto (opcional)" autofocus="">
+                </div>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

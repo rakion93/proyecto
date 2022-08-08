@@ -1,0 +1,51 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Registro Nuevo Producto</h3>
+    <!-- Comprovamos si hay mensajes que mostrar -->
+    <div class="box">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="notification is-danger">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <!-- Formulario de registro de producto -->
+        <form method="POST" action="/registroproducto">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="name" placeholder="Nombre Producto" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="price" placeholder="Precio" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="iva" placeholder="IVA" autofocus="" required>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="stock" placeholder="Stock" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <textarea class="textarea is-primary" name="description" placeholder="Primary textarea"></textarea>
+                </div>
+            </div>
+             <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="url" placeholder="URL Imagen Producto (opcional)" autofocus="">
+                </div>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Registrar producto</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

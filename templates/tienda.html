@@ -1,0 +1,201 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+<!-- Si es la primera vez, damos la bienvenida al usuario -->
+{% if primeravez %}
+    <div class="columns">
+        <div class="column is four-fifths">
+            <h1 class="title desaparece top">Bienvenido, {{ user.name }}</h1>
+        </div>
+    </div>
+{% endif %}
+<!-- Si el usuario es el admin -->
+{% if current_user.email == "admin@admin.com" %}
+    <div class="columns">
+        <div class="column">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="notification is-danger">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+        </div>
+    </div>
+    <!-- Hacemos un bucle cada 4, queremos 4 productos por fila -->
+    {% for i in range(0, productos|length, 4) %}
+        <div class="columns">
+            <!-- Dentro de cada bucle, comprovaremos 4 productos-->
+            {% for j  in range(i, i+4) %}
+                <!-- Comprovacion para que, si en una fila tiene 3 productos, meter 1 vacio -->
+                {% if j < productos|length %}
+                    <div class="column">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">
+                                  {{ productos[j].name }}
+                                </p>
+                            </header>
+                            <div class="card-image">
+                                <figure class="image is-4by3">
+                                    {% if productos[j].url != "undefined" %}<img src="{{ productos[j].url }}" alt="Placeholder image" class="is-rounded">
+                                    {% else %} <img src="https://st4.depositphotos.com/14953852/22772/v/600/depositphotos_227725020-stock-illustration-no-image-available-icon-flat.jpg" alt="Placeholder image" class="is-rounded">
+                                    {% endif %}
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-content">
+                                        <p class="card-hearder-subtitle">Precio : {{ '%0.2f' % productos[j].price|float }} €</p>
+                                        <p class="card-hearder-subtitle">Precio Venta : {{ '%0.2f' % productos[j].finalprice|float }} €</p>
+                                        <p class="card-hearder-subtitle">Stock Almacen Proveedor : {{ productos[j].stockAlmacen }} </p>
+                                        <p class="card-hearder-subtitle">Stock Actual : {{ productos[j].stock }} </p>
+                                        <br>
+                                    </div>
+                                </div>
+                                <div class="content">
+                                    <p>{{ productos[j].descripcion }}</p>
+                                </div>
+                            </div>
+                            <footer class="card-footer">
+                                <!-- Formulario para pedir al proveedor -->
+                                <form method="POST" action="/askForProduct/{{productos[j].id}}">
+                                    <div class="field has-addons">
+                                        <div class="control">
+                                            <input class="input is-fullwidth" type="text" name="cantidad" placeholder="Cantidad" autofocus="" required>
+                                        </div>
+                                        <div class="control">
+                                            <!-- Si el stock < 5 el boton sera rojo -->
+                                            <button class="button is-block is-info is-fullwidth {% if productos[j].stock < 5 %}is-danger{% endif%}">
+                                                Pedir Proveedor
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </footer>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- De este modo, ponemos una columna que no se vera -->
+                    <!-- Las cards siempre tendran el mismo ancho, ya que cada fila tendra 4-->
+                    <div class="column disabled">
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+<!-- Si el usuario es un proveedor -->
+{% elif current_user.cat == 0 %}
+    {% for i in range(0, productos.count(), 4) %}
+        <div class="columns">
+            {% for j  in range(i, i+4) %}
+                {% if j < productos.count() %}
+                    {% if productos[j].proveedor == current_user.id %}
+                        <div class="column">
+                            <div class="card">
+                                <header class="card-header">
+                                    <p class="card-header-title">
+                                      {{ productos[j].name }}
+                                    </p>
+                                </header>
+                                <div class="card-image">
+                                    <figure class="image is-4by3">
+                                        {% if productos[j].url != "undefined" %}<img src="{{ productos[j].url }}" alt="Placeholder image" class="is-rounded">
+                                        {% else %} <img src="https://st4.depositphotos.com/14953852/22772/v/600/depositphotos_227725020-stock-illustration-no-image-available-icon-flat.jpg" alt="Placeholder image" class="is-rounded">
+                                        {% endif %}
+                                    </figure>
+                                </div>
+                                <div class="card-content">
+                                    <div class="media">
+                                        <div class="media-content">
+                                            <p class="card-hearder-subtitle">{{ '%0.2f' % productos[j].price|float }} €</p>
+                                            <p class="card-hearder-subtitle">Stock Almacen : {{ productos[j].stockAlmacen }} </p>
+                                            <p class="card-hearder-subtitle">Stock Cliente : {{ productos[j].stock }} </p>
+                                            <p class="card-hearder-subtitle">Descripción: {{ productos[j].description }}</p>
+                                            <br>
+                                        </div>
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <a href="/modifyproduct/{{productos[j].id}}" class="card-footer-item">Edit</a>
+                                    <a href="/eliminar-producto/{{productos[j].id}}" class="card-footer-item">Delete</a>
+                                </footer>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="column disabled">
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+<!-- Si el usuario es un cliente -->
+{% else %}
+    <div class="columns">
+        <div class="column">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="notification is-danger">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+        {% for i in range(0, productos|length, 4) %}
+            <div class="columns">
+                {% for j  in range(i, i+4) %}
+                    {% if j < productos|length %}
+                        <div class="column">
+                            <div class="card is-transparent">
+                                <header class="card-header">
+                                    <p class="card-header-title">
+                                      {{ productos[j].name }}
+                                    </p>
+                                </header>
+                                <div class="card-image">
+                                    <figure class="image is-4by3">
+                                        {% if productos[j].url != "undefined" %}<img src="{{ productos[j].url }}" alt="Placeholder image" class="is-rounded" >
+                                        {% else %} <img src="https://st4.depositphotos.com/14953852/22772/v/600/depositphotos_227725020-stock-illustration-no-image-available-icon-flat.jpg" alt="Placeholder image" class="is-rounded" >
+                                        {% endif %}
+                                    </figure>
+                                </div>
+                                <div class="card-content">
+                                    <div class="media">
+                                        <div class="media-content">
+                                            <p class="card-hearder-title"></p>
+                                            <p class="card-hearder-subtitle">{{ '%0.2f' % productos[j].finalprice|float }} €</p>
+                                            <p class="card-hearder-subtitle">{{ productos[j].description }} </p>
+                                        </div>
+                                    </div>
+                                    <div class="content">
+                                        <p>{{ productos[j].descripcion }}</p>
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <form method="POST" action="/addProduct/{{productos[j].id}}">
+                                        <div class="field has-addons">
+                                            <div class="control">
+                                            <input class="input is-fullwidth" type="text" name="cantidad" placeholder="Cantidad" autofocus="" required>
+                                                </div>
+                                            <div class="control">
+                                                <button class="button is-block is-info is-fullwidth">
+                                                    Añadir al Carrito
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </footer>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="column disabled">
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,72 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+<div class="containerMessage">
+    <div class="columns">
+        <div class="column">
+            <h1>Nombre</h1>
+        </div>
+        <div class="column">
+            <h1>Cantidad</h1>
+        </div>
+        <div class="column">
+            <h1>Precio Unitario</h1>
+        </div>
+        <div class="column">
+            <h1>Precio Total</h1>
+        </div>
+        <div class="column">
+        </div>
+    </div>
+    <!-- Creamos la variable precioTotal, sera el precioTotal del pedido -->
+    {% set precioTotal = namespace(total=0) %}
+        <!-- Recorremos los pedidos -->
+        {% for pedido in pedidos %}
+            <!-- Si el id_cliente del pedido es el current user y no esta confirmado -->
+            {% if pedido.id_cliente == current_user.id and pedido.confirmado == False %}
+                <!--Mostramos los datos del pedido -->
+                <div class="box">
+                    <div class="columns">
+                        <div class="column">
+                            <!-- Desde el pedido, vamos a la información del producto (Relationship) -->
+                            {{ pedido.pedidos_incluido.name }}
+                        </div>
+                        <div class="column">
+                            <p>{{ pedido.cantidad  }}u</p>
+                        </div>
+                        <div class="column">
+                            <!-- Redondeamos el valor con el format de jinja -->
+                            <p>{{ '%0.2f' % pedido.pedidos_incluido.finalprice|float }} €</p>
+                        </div>
+                        <div class="column">
+                            <!-- Redondeamos el valor con el formato de jinja -->
+                            <p>{{ '%0.2f' % (pedido.pedidos_incluido.finalprice * pedido.cantidad) }} €</p>
+                            <!-- Actualizamos el valor del precioTotal -->
+                            {% set precioTotal.total = precioTotal.total + pedido.pedidos_incluido.finalprice * pedido.cantidad %}
+                        </div>
+                        <div class="column">
+                            <!-- Posibilidad de eliminar elemento del carrito -->
+                            <a href="/deleteElementCarrito/{{pedido.id}}">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    <!-- Creamos una nueva fila para el precioTotal -->
+    <div class="columns">
+        <div class="column">
+            <h1>Precio Total Pedido</h1>
+        </div>
+        <div class="column">
+            <!-- Mostramor el precioTotal con el redondedo de Jinja -->
+            <p>{{ '%0.2f' % precioTotal.total|float }} €</p>
+        </div>
+    </div>
+        <div class="columns">
+            <div class="column">
+            <!-- Boton para confirmar el pedido -->
+            <a href="/confirmarCarrito">Confirmar Pedido</a>
+                </div>
+        </div>
+    </div>
+{% endblock %}

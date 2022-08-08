@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Hoja estilos -->
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <title>PComps</title>
+    <!-- Bulma -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="estilos.css">
+</head>
+
+<body>
+    <!-- Seccion primaria a fullheight -->
+    <section class="hero is-fullheight is-primary">
+        <!-- Imagen de fondo -->
+        <img alt="Fill Murray" class="hero-background is-transparent" src="/static/images/heroimage.jpg">
+        <!-- Cabecera -->
+            <div class="hero-head">
+                <!-- Barra Navegación  -->
+                <nav class="navbar">
+                    <div class="navbar-brand">
+                        <!-- Barra navegación Responsive -->
+                        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenuHeroA">
+                            <span aria-hidden="true"></span>
+                            <span aria-hidden="true"></span>
+                            <span aria-hidden="true"></span>
+                        </a>
+                    </div>
+                    <!-- Items barra navegación -->
+                    <div id="navbarMenuHeroA" class="navbar-menu">
+                        <div class="navbar-end">
+                            <a href="{{ url_for('index') }}" class="navbar-item btn from-right">
+                                Inicio
+                            </a>
+
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('perfil') }}" class="navbar-item btn from-right">
+                                    Perfil
+                                </a>
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('tienda') }}" class="navbar-item btn from-right">
+                                    Tienda
+                                </a>
+                            {% endif %}
+                            {% if current_user.is_authenticated and current_user.cat == 0 or current_user.name == "admin" %}
+                                <a href="{{ url_for('mensajes') }}" class="navbar-item btn from-right">
+                                    Mensajes
+                                </a>
+                            {% endif %}
+                            {% if current_user.is_authenticated and current_user.cat == True and current_user.name != "admin" %}
+                                <a href="{{ url_for('carrito') }}" class="navbar-item btn from-right">
+                                    Carrito
+                                </a>
+                            {% endif %}
+                            {% if not current_user.is_authenticated %}
+                                <a href="{{ url_for('login') }}" class="navbar-item btn from-right">
+                                    Login
+                                </a>
+                                <a href="{{ url_for('signup') }}" class="navbar-item btn from-right">
+                                    Registro
+                                </a>
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('logout') }}" class="navbar-item btn from-right">
+                                    Logout
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <!-- Botón registrar nuevo producto -->
+            {% if current_user.is_authenticated and current_user.cat == False %}
+                <a href="{{ url_for('regproducto') }}" class="btn-flotante">Registrar nuevo producto</a>
+            {% endif %}
+            <!-- Contenido central -->
+            <div class="hero-body" >
+                <div class="container has-text-centered">
+                   {% block content %}
+                   {% endblock %}
+                </div>
+            </div>
+        <footer>
+            <!-- Footer Vacio -->
+        </footer>
+    </section>
+
+    <!-- Script para el menu responsive -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+      $navbarBurgers.forEach( el => {
+        el.addEventListener('click', () => {
+          const target = el.dataset.target;
+          const $target = document.getElementById(target);
+          el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
+        });
+      });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    {% if current_user.name == "admin" %}
+        <div class="containerMessage is-vcentered">
+            <!-- Primera fila con cabeceras -->
+            <div class="columns">
+                <div class="column">
+                    <p>PRODUCTO</p>
+                </div>
+                <div class="column">
+                    <p>USUARIO</p>
+                </div>
+                <div class="column">
+                    <p>MOTIVO</p>
+                </div>
+                <div class="column">
+                    <p>Pedir al proveedor</p>
+                </div>
+                <div class="column">
+                    <p>Eliminar</p>
+                </div>
+            </div>
+            <!-- Recorremos los mensajes -->
+            {% for mensaje in mensajes %}
+                <!-- Si el emisor del mensaje es un cliente y su nombre es diferente de "admin" -->
+                {% if mensaje.emisor.cat == 1 and mensaje.emisor.name != "admin" %}
+                    <div class="columns">
+                        <div class="column">
+                            <!-- Gracias a la relacion de tablas, desde el mensaje podemos ver el nombre del producto -->
+                            {{mensaje.mensaje_incluido.name}}
+                        </div>
+                        <div class="column">
+                            {{mensaje.emisor.name}}
+                        </div>
+                        <div class="column">
+                            <p>No hay suficiente stock.</p>
+                        </div>
+                        <div class="column">
+                            <form method="POST" action="/askForProduct/{{mensaje.id_producto}}">
+                                <div class="field has-addons">
+                                    <div class="control">
+                                        <input class="input is-fullwidth" type="text" name="cantidad" placeholder="Cantidad" autofocus="" required>
+                                    </div>
+                                    <div class="control">
+                                        <button class="button is-block is-info is-fullwidth">
+                                            Pedir Proveedor
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="column">
+                            <a class="button is-danger is-outlined" href="/deletemessage/{{mensaje.id}}" >
+                                <span>Eliminar</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    <!-- Si el current_user es un proveedor-->
+    {% else %}
+        <div class="containerMessage">
+            <!-- Primera fila con cabeceras -->
+            <div class="columns">
+                <div class="column">
+                    <p>PRODUCTO</p>
+                </div>
+                <div class="column">
+                    <p>CANTIDAD</p>
+                </div>
+                <div class="column">
+                </div>
+            </div>
+            <!-- Recorremos los mensajes -->
+            {% for mensaje in mensajes %}
+                <!-- Si el proveedor del producto del mensaje es igual al current_user.id -->
+                {% if mensaje.mensaje_incluido.proveedor == current_user.id %}
+                    <div class="columns">
+                        <div class="column">
+                            <!-- Gracias a la relacion de tablas, desde el mensaje podemos ver el nombre del producto -->
+                            {{mensaje.mensaje_incluido.name}}
+                        </div>
+                        <div class="column">
+                            {{mensaje.cantidad}}
+                        </div>
+                        <div class="column">
+                            <!-- Boton para confirmar la solicitud -->
+                            <a href="/confirmarSolicitud/{{mensaje.id}}">Confirmar Solicitud</a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

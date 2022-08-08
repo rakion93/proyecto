@@ -1,0 +1,21 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <!-- Si el usuario es el admin mostraremos la navegación entre graficas-->
+    {% if current_user.name == "admin" %}
+        <div class="columns is-mobile">
+            <div class="column"><a href="{{ url_for('graficasVentasUnidades') }}">Ventas Unidades</a></div>
+            <div class="column"><a href="{{ url_for('graficasVentasEuros') }}">Ventas Euros</a></div>
+            <div class="column"><a href="{{ url_for('graficasBeneficio') }}">Beneficio</a></div>
+            <div class="column"><a href="{{ url_for('graficastocks') }}">Stocks</a></div>
+        </div>
+        <div class="columns">
+            <!-- Mostramos el grafico -->
+            <object  type="image/svg+xml" data="{{image_url}}">
+        </div>
+    <!-- Sino mostramos el grafico de cliente o proveedor-->
+    {% else %}
+        <object  type="image/svg+xml" data="{{image_url}}"></div>
+    {% endif %}
+
+{% endblock %}
